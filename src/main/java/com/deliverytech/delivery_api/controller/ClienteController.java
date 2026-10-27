@@ -1,59 +1,51 @@
 package com.deliverytech.delivery_api.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.deliverytech.delivery_api.model.Cliente;
+import com.deliverytech.delivery_api.dto.req.ClienteReqDTO;
+import com.deliverytech.delivery_api.dto.res.ClienteResDTO;
+import com.deliverytech.delivery_api.service.ClienteService;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 /*
 Definimos através da annotation de que esse arquivo trabalha com
 requisições HTTP/HTTPS
 */
 @RestController
+@RequestMapping("/clientes")
+/*
+Permição de acesso para qualquer origem,
+pois está utilizando a espressão "*"
+*/
+@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class ClienteController {
-    
-    /*Simular um banco de dados com uma lista de Cliente
-    construir utilizando Spring Boot REST delivery_api
-    através do nosso localhost:8080/cliente
+ 
+    // injetando o serviço de cliente
+    private final ClienteService clienteService;
+ 
+ 
+    /*
+    Utilizando verbo POST para cadastrar cliente
     */
-   @GetMapping("/cliente")
-   public Cliente getCliente() {
-    return new Cliente("joão","Silva");
-   }
-
-    /* Simulando um banco de dados com uma lista de clientes
-        Retornando uma List
-        https://localhost:8080/clientes
+    @PostMapping
+ 
+    /*
+    Anotatio @Valid para validar o objeto cliente recebido no corpo da requisição
+    através da anotação @RequestBody, que por sua vez indica que o obketo cliente será enviado no corpo da requisição
     */
-    @GetMapping("/clientes")
-    /*<List> forma como usamos para percorer algo em uma lista (Array) */
-    public List<Cliente> getClientes() {
-        List<Cliente> clientes = new ArrayList<>();
-        clientes.add(new Cliente("João", "Silva"));
-        clientes.add(new Cliente("Maria", "Souza"));
-        clientes.add(new Cliente("Pedro", "Oliveira"));
-        return clientes;
+    public ResponseEntity<ClienteResDTO>
+    cadastrarCliente(@Valid
+        @RequestBody ClienteReqDTO dto) {
+            ClienteResDTO cliente = clienteService.cadastrarCliente(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(cliente);
     }
-
-    /* lembrando se for salvo com caracter especiao no caso o ã a forma de busca e diferente */
-    // O valor na URL diretamente injetado no método
-    // http://localhost:8080/cliente/Jo%C3%A3o/Silva
-    @GetMapping("/cliente/{nome}/{sobrenome}")
-    public Cliente getClienteByPathVariable(@PathVariable String nome, @PathVariable String sobrenome) {
-        return new Cliente(nome, sobrenome);
-    }
-
-    // build onde os valores são passados como query params
-    // URL: http://localhost:8080/cliente/query?nome=Jo%C3%A3o&sobrenome=Silva
-    @GetMapping("/cliente/query")
-    public Cliente getClienteByQueryParam(
-        @RequestParam String nome, @RequestParam String sobrenome) {
-        return new Cliente(nome, sobrenome);
-    }
-
+ 
 }
