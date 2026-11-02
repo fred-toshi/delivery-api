@@ -1,24 +1,25 @@
 package com.deliverytech.delivery_api.dto.req;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
- 
+
 public class ClienteReqDTO {
- 
+
     /*
-    Anotation NoteBlank para não permitir
+    Anotation NoteBlank para não permitir 
     que o usuario passe algo como vazio
     */
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 2, max = 100, message = "Nome deve ter entre 2 e 100 caracteres")
     private String nome;
- 
+
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "")
     private String email;
- 
+
     @NotBlank(message = "Telefone é obrigatório")
     /*
     Regex Regular expression, para realizar buscar e permitir
@@ -27,22 +28,28 @@ public class ClienteReqDTO {
     */
     @Pattern(regexp = "^[0-9]{10,11}$", message = "Telefone deve ter apenas Digitos e dever ser DD + Telefone")
     private String telefone;
- 
+
     @NotBlank(message = "Endereço é obrigatório")
+    /*
+        Através das Anotation@Schema usamos para gerar 
+        descrições de exemplo de uso dos nosso DTO
+    */
+    @Schema(description = "Endereço completo do cliene",
+            example = "Rua das Flores, 123 - Centro")
     @Size(max = 200, message = "Endereço deve cnoter no maximo 200 caracteres")
     private String endereco;
- 
+
     // Getter e Setter
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
- 
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
- 
+
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
- 
+
     public String getEndereco() { return endereco; }
     public void setEndereco(String endereco) { this.endereco = endereco; }
- 
+
 }

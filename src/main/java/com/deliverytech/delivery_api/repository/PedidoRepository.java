@@ -1,6 +1,7 @@
 package com.deliverytech.delivery_api.repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +45,13 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
 
     // Buscar por número do pedido
-    Pedido findByNumeroPedido(String numeroPedido);
+    List<Pedido> findByStatusPedidoInOrderByDataPedidoAsc(Collection<StatusPedido> status);
+
+    // Buscar por número do pedido — Optional evita retorno null silencioso
+    Optional<Pedido> findByNumeroPedido(String numeroPedido);
+
+    // Útil para validar unicidade do número antes de salvar, se necessário
+    boolean existsByNumeroPedido(String numeroPedido);
 
     /*
     Buscar pedido por ID já trazendo os itens junto (fetch join).
@@ -61,6 +68,9 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     // Buscar pedidos por restaurante
     @Query("SELECT p FROM Pedido p WHERE p.restaurante.id = :restauranteId ORDER BY p.dataPedido DESC")
     List<Pedido> findByRestauranteId(@Param("restauranteId") Long restauranteId);
+
+    // Buscar pedidos de um cliente em um status específico
+    List<Pedido> findByClienteIdAndStatusPedidoOrderByDataPedidoDesc(Long clienteId, StatusPedido statusPedido);
 
     // Relatório - pedidos por status
     @Query("SELECT p.statusPedido, COUNT(p) FROM Pedido p GROUP BY p.statusPedido")
