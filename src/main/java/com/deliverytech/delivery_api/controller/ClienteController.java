@@ -2,6 +2,8 @@ package com.deliverytech.delivery_api.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,6 +42,12 @@ pois está utilizando a espressão "*"
 @Tag(name = "Clientes", description = " Operações relacionadas aos clientes")
 public class ClienteController {
 
+    /*
+    Logger da classe. Os logs recebem automaticamente o correlationId
+    (via CorrelationIdFilter) e o traceId (via Micrometer Tracing) pelo MDC.
+    */
+    private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
+
     // injetando o serviço de cliente
     private final ClienteService clienteService;
 
@@ -63,7 +71,11 @@ public class ClienteController {
     public ResponseEntity<ClienteResDTO>
     cadastrarCliente(@Valid 
         @RequestBody ClienteReqDTO dto) {
+            logger.info("Cadastro de cliente iniciado");
+
             ClienteResDTO cliente = clienteService.cadastrarCliente(dto);
+
+            logger.info("Cliente cadastrado com ID {}", cliente.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(cliente);
     }
 
@@ -72,7 +84,11 @@ public class ClienteController {
     */
     @GetMapping
     public ResponseEntity<List<ClienteResDTO>> listar() {
+        logger.debug("Listagem de clientes ativos solicitada");
+
         List<ClienteResDTO> clientes = clienteService.listarClientesAtivos();
+
+        logger.debug("Listagem retornou {} clientes", clientes.size());
         return ResponseEntity.ok(clientes);
     }
 
@@ -80,16 +96,9 @@ public class ClienteController {
     Buscar cliente por ID
     */
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id,
-        @Valid @RequestBody ClienteReqDTO dto
-    ) {
-        ClienteResDTO cliente = clienteService.atualizarCliente(id, dto);
-
-        if (cliente != null) {
-            return ResponseEntity.ok(cliente);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ClienteResDTO> buscarPorId(@PathVariable Long id) {
+        logger.debug("Busca de cliente por ID {}", id);
+        return ResponseEntity.ok(clienteService.buscarClientePorId(id));
     }
 
     /*
@@ -99,7 +108,11 @@ public class ClienteController {
     public ResponseEntity<ClienteResDTO> atualizarCliente(
             @PathVariable Long id,
             @Valid @RequestBody ClienteReqDTO dto) {
+        logger.info("Atualização do cliente ID {} iniciada", id);
+
         ClienteResDTO cliente = clienteService.atualizarCliente(id, dto);
+
+        logger.info("Cliente ID {} atualizado", id);
         return ResponseEntity.ok(cliente);
     }
 
@@ -109,7 +122,11 @@ public class ClienteController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<ClienteResDTO> ativarDesativarCliente(
             @PathVariable Long id) {
+        logger.info("Alteração de status do cliente ID {} solicitada", id);
+
         ClienteResDTO cliente = clienteService.ativarDesativarCliente(id);
+
+        logger.info("Status do cliente ID {} atualizado", id);
         return ResponseEntity.ok(cliente);
     }
 
@@ -118,7 +135,23 @@ public class ClienteController {
     */
     @GetMapping("/email/{email}")
     public ResponseEntity<ClienteResDTO> buscarPorEmail(@PathVariable String email) {
+        logger.debug("Busca de cliente por e-mail {}", mascararEmail(email));
+
         ClienteResDTO cliente = clienteService.buscarClientePorEmail(email);
         return ResponseEntity.ok(cliente);
     }
+
+    /*
+    Mascara o e-mail antes de registrar no log (ex.: jo***@dominio.com),
+    pois e-mail é dado pessoal (LGPD) e os logs ficam salvos em arquivo
+    */
+    private String mascararEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return "***";
+        }
+        int arroba = email.indexOf('@');
+        String prefixo = email.substring(0, Math.min(2, arroba));
+        return prefixo + "***" + email.substring(arroba);
+    }
+
 }

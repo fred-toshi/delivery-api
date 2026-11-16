@@ -3,6 +3,9 @@ package com.deliverytech.delivery_api.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.deliverytech.delivery_api.dto.req.ItemPedidoReqDTO;
 import com.deliverytech.delivery_api.dto.req.PedidoReqDTO;
 import com.deliverytech.delivery_api.dto.res.PedidoResDTO;
@@ -28,5 +31,9 @@ public interface PedidoService {
     BigDecimal calcularTotalPedido(List<ItemPedidoReqDTO> itens);
 
     void cancelarPedido(Long id);
+
+    Page<PedidoResDTO> listarPorCliente(Long clienteId, Pageable pageable);
+
+    Page<PedidoResDTO> listarMeusPedidos(String emailUsuario, Pageable pageable);
 
 }

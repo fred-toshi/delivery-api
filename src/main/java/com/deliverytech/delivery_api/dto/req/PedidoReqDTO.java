@@ -24,17 +24,39 @@ public class PedidoReqDTO {
     @Valid
     private List<ItemPedidoReqDTO> itens;
 
-    public Long getClienteId() { return clienteId; }
-    public void setClienteId(Long clienteId) { this.clienteId = clienteId; }
+    public Long getClienteId() {
+        return clienteId;
+    }
 
-    public Long getRestauranteId() { return restauranteId; }
-    public void setRestauranteId(Long restauranteId) { this.restauranteId = restauranteId; }
+    public void setClienteId(Long clienteId) {
+        this.clienteId = clienteId;
+    }
 
-    public String getEnderecoEntrega() { return enderecoEntrega; }
-    public void setEnderecoEntrega(String enderecoEntrega) { this.enderecoEntrega = enderecoEntrega; }
+    public Long getRestauranteId() {
+        return restauranteId;
+    }
 
-    public List<ItemPedidoReqDTO> getItens() { return itens; }
-    public void setItens(List<ItemPedidoReqDTO> itens) { this.itens = itens; }
+    public void setRestauranteId(Long restauranteId) {
+        this.restauranteId = restauranteId;
+    }
+
+    public String getEnderecoEntrega() {
+        return enderecoEntrega;
+    }
+
+    public void setEnderecoEntrega(String enderecoEntrega) {
+        this.enderecoEntrega = enderecoEntrega;
+    }
+
+    public List<ItemPedidoReqDTO> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemPedidoReqDTO> itens) {
+        this.itens = itens;
+    }
+
+
 
 }
 
