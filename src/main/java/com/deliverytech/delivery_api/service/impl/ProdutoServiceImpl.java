@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +43,20 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "produtos", key = "#id")
     public ProdutoResDTO buscarProdutoPorId(Long id) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado: " + id));
         return toResponseDTO(produto);
     }
 
     @Override
+    @CachePut(value = "produtos", key = "#id")
     public ProdutoResDTO atualizarProduto(Long id, ProdutoReqDTO dto) {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado: " + id));
@@ -79,6 +88,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
+    @CachePut(value = "produtos", key = "#id")
     public ProdutoResDTO alterarDisponibilidade(Long id) {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado: " + id));
@@ -126,7 +136,6 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     // ---------- conversões DTO <-> Entity ----------
-
     private Produto toEntity(ProdutoReqDTO dto) {
         Produto produto = new Produto();
         produto.setNome(dto.getNome());
