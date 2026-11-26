@@ -31,8 +31,8 @@ jobs:
       mysql:
         image: mysql:8.4
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ vars.MYSQL_DATABASE }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          DB_DATABASE: ${{ vars.DB_DATABASE }}
         ports:
           - 3306:3306
         options: >-
@@ -64,10 +64,10 @@ jobs:
         env:
           # sensíveis (secrets)
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           # não sensíveis (vars)
           JWT_EXPIRATION: ${{ vars.JWT_EXPIRATION }}
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ vars.MYSQL_DATABASE }}?allowPublicKeyRetrieval=true&useSSL=false
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ vars.DB_DATABASE }}?allowPublicKeyRetrieval=true&useSSL=false
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATA_REDIS_HOST: localhost
           SPRING_DATA_REDIS_PORT: 6379
